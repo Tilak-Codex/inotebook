@@ -23,11 +23,14 @@ const Signup = (props) => {
         body: JSON.stringify({ name, email, password })
       });
       const json = await response.json();
-      if (response.ok && json.token) {
-        localStorage.setItem('token', json.token);
-        props.showAlert("Account created successfully", "success");
-        navigate("/");
-      } else {
+      if (response.ok) {
+  props.showAlert(
+    "Verification email sent! Please check your inbox.",
+    "success"
+  );
+
+  navigate("/login");
+} else {
         const errMsg = json.error || (json.errors && json.errors[0].msg) || "Failed to create account";
         props.showAlert(errMsg, "danger");
       }

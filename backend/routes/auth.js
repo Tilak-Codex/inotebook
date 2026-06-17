@@ -42,18 +42,17 @@ router.post('/createUser',
        if (existingUserName) {
     return res.status(400).json({ error: "User already exists give unique UserName" });
   }
-   const user = new User(req.body);
+   const user = new User({
+  name: req.body.name,
+  email: req.body.email,
+  password: req.body.password,
+  isVerified: false   
+});
    const salt = await bcrypt.genSalt(10);
    user.password = await bcrypt.hash(user.password, salt);
-  await user.save();
-  const data={
-    user:{
-      id:user.id
-    }
-  }
-  const authToken = jwt.sign(data, JWT_SECRET);
-  res.json({ token: authToken });
-
+   await user.save();
+   res.json({ msg: "User created (not verified yet)" });
+  
 } catch (err) {
   console.error(err.message);
   res.status(500).send("Internal Server Error");
