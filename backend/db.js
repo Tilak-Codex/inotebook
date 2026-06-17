@@ -1,19 +1,21 @@
 const mongoose = require('mongoose'); 
+require('dotenv').config(); // Load environment variables from .env file
 /*means you're importing the Mongoose library into your Node.js file.
 
 require('mongoose') → loads the Mongoose package (which you installed using npm i mongoose)
 
 const mongoose = → stores it in a variable so you can use it
 */
-const mongoURI = "mongodb://iNoteBook:6TSVJWJwwUETSMLK@ac-v5lttbw-shard-00-00.zrbsurd.mongodb.net:27017,ac-v5lttbw-shard-00-01.zrbsurd.mongodb.net:27017,ac-v5lttbw-shard-00-02.zrbsurd.mongodb.net:27017/?ssl=true&replicaSet=atlas-pkexc2-shard-0&authSource=admin&appName=Cluster0";
-const connectToMongo = async () => {
+const mongoURI = process.env.MONGO_URI;
+    const connectToMongo = async () => {
     try {
         await mongoose.connect(mongoURI);
         console.log('Connected to MongoDB successfully');
     } catch (error) {
         console.error('MongoDB connection error:', error);
     }
-}
+};
+
 
 module.exports=connectToMongo;
 /*

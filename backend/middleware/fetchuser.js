@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "TilakIsAGood$Boy"; // secret key for signing the JWT token, should be kept in env variable in production
+const JWT_SECRET = process.env.JWT_SECRET; // secret key for signing the JWT token, should be kept in env variable in production
 
 const fetchuser = (req, res, next) => {
   const token = req.header("auth-token");
