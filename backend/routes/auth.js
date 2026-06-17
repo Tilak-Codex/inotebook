@@ -8,11 +8,32 @@ const { body, validationResult } = require("express-validator");
 
 const bcrypt = require('bcryptjs'); // for hashing the password before saving it to the database
 
+const nodemailer = require("nodemailer");
+
 const jwt = require('jsonwebtoken'); // for generating a token for the user after successful login
 
 const JWT_SECRET = process.env.JWT_SECRET; // secret key for signing the JWT token, should be kept in env variable in production
 
 const fetchuser=require('../middleware/fetchuser');
+
+const sendVerificationEmail = async (email, token) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASS
+    }
+  });
+
+  const url = `http://localhost:5000/api/auth/verify/${token}`;
+
+  await transporter.sendMail({
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Verify your email",
+    html: `<a href="${url}">Click here to verify</a>`
+  });
+};
 
 // Route:1 Create a User using: POST "/api/auth/createUser".. Doesnt require Auth
 router.post('/createUser',
@@ -51,6 +72,13 @@ router.post('/createUser',
    const salt = await bcrypt.genSalt(10);
    user.password = await bcrypt.hash(user.password, salt);
    await user.save();
+   const token = jwt.sign(
+  { userId: user._id },
+  process.env.JWT_SECRET,
+  { expiresIn: "10m" }
+);
+
+await sendVerificationEmail(user.email, token);
    res.json({ msg: "User created (not verified yet)" });
   
 } catch (err) {
@@ -118,8 +146,23 @@ router.post('/getUser',fetchuser,
 
 });
 
+// Router:4 Verify email using: GET "/api/auth/verify/:token"
+router.get("/verify/:token", async (req, res) => {
+  try {
+    const decoded = jwt.verify(req.params.token, process.env.JWT_SECRET);
 
+    const user = await User.findById(decoded.userId);
 
+    if (!user) return res.send("User not found");
+
+    user.isVerified = true;
+    await user.save();
+
+    res.send("Email verified successfully");
+  } catch (err) {
+    res.send("Link expired or invalid");
+  }
+});
 
 
 
