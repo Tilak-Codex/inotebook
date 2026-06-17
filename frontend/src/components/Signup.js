@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 const host = "https://inotebook-zdib.onrender.com";
+let response;
 const Signup = (props) => {
   const [credentials, setCredentials] = useState({ name: "", email: "", password: "", cpassword: "" });
   const [loading, setLoading] = useState(false);
@@ -15,30 +16,41 @@ const Signup = (props) => {
     }
     setLoading(true);
     try {
-      const response = await fetch(`${host}/api/auth/createUser`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ name, email, password })
-      });
-      const json = await response.json();
-      if (response.ok) {
-  props.showAlert(
-    "Verification email sent! Please check your inbox.",
-    "success"
-  );
+  response = await fetch(`${host}/api/auth/createUser`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name, email, password })
+  });
 
-  navigate("/login");
-} else {
-        const errMsg = json.error || (json.errors && json.errors[0].msg) || "Failed to create account";
-        props.showAlert(errMsg, "danger");
-      }
-    } catch (err) {
-      props.showAlert("Could not connect to authentication server", "danger");
-    } finally {
-      setLoading(false);
-    }
+  let json = {};
+
+  try {
+    json = await response.json();
+  } catch (err) {
+    console.log("JSON parse failed:", err);
+  }
+
+  if (response.ok) {
+    props.showAlert("Verification email sent!", "success");
+    navigate("/login");
+  } else {
+    const errMsg =
+      json.error ||
+      (json.errors && json.errors[0].msg) ||
+      "Failed to create account";
+
+    props.showAlert(errMsg, "danger");
+  }
+
+} catch (err) {
+  console.log("FETCH ERROR:", err);
+  props.showAlert("Server not responding", "danger");
+
+} finally {
+  setLoading(false);
+}
   }
 
   const onChange = (e) => {
