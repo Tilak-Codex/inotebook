@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import noteContext from './noteContext';
-const host = "https://inotebook-zdib.onrender.com";
+
 const NoteState = (props) => {
   const host = "https://inotebook-zdib.onrender.com";
   const notesInitial = [];
