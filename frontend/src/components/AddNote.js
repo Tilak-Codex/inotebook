@@ -5,7 +5,7 @@ const AddNote = (props) => {
   const context = useContext(noteContext);
   const { addNote } = context;
 
-  const [note, setNote] = useState({ title: "", description: "", tag: "General" });
+  const [note, setNote] = useState({ title: "", description: "", tag: "" });
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -50,7 +50,7 @@ const AddNote = (props) => {
             className="form-control glass-input" 
             id="title" 
             name="title" 
-            placeholder="Reviewing project architectures..." 
+            placeholder="Give your note a title..." 
             value={note.title} 
             onChange={onChange} 
             required 
@@ -85,7 +85,7 @@ const AddNote = (props) => {
               name="tag" 
               value={note.tag} 
               onChange={onChange}
-              placeholder="General"
+              placeholder="You can choose your own tag or select from presets below"
               disabled={submitting}
             />
           </div>

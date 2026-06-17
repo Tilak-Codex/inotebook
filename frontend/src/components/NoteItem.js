@@ -1,5 +1,7 @@
 import React, { useContext, useState } from 'react';
 import noteContext from '../context/notes/noteContext';
+import jsPDF from "jspdf";
+
 
 const NoteItem = (props) => {
   const context = useContext(noteContext);
@@ -34,6 +36,31 @@ const NoteItem = (props) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   };
+  //download note as pdf
+  const downloadNote = () => {
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text(note.title, 10, 20);
+
+  doc.setFontSize(12);
+  doc.text(`Tag: ${note.tag || "General"}`, 10, 35);
+
+  doc.text(
+    `Date: ${formatDate(note.date)}`,
+    10,
+    45
+  );
+
+  const description = doc.splitTextToSize(
+    note.description,
+    180
+  );
+
+  doc.text(description, 10, 60);
+
+  doc.save(`${note.title}.pdf`);
+};
 
   return (
     <div className="col-md-4 mb-4">
@@ -91,6 +118,31 @@ const NoteItem = (props) => {
               </svg>
             )}
           </button>
+          {/* Download Icon */}
+          <button
+  className="btn btn-sm p-1 border-0"
+  style={{
+    color: '#10b981',
+    background: 'transparent'
+  }}
+  onClick={downloadNote}
+  title="Download Note"
+>
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+    <polyline points="7 10 12 15 17 10"/>
+    <line x1="12" y1="15" x2="12" y2="3"/>
+  </svg>
+</button>
         </div>
       </div>
     </div>
