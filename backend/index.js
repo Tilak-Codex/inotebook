@@ -6,9 +6,11 @@ connectTMongo is a object that holds the function exported from db.js. By requir
 connectToMong();
 const User=require('./models/User');
 const express = require('express')
+const cors = require('cors')
 const app = express()
 const port = 5000
 
+app.use(cors())
 app.use(express.json()); //Adds a middleware to parse incoming JSON requests, making the data available in req.body.
 //w.o it req.body = undefined
 
