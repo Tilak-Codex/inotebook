@@ -1,26 +1,40 @@
 const connectToMong = require('./db');
 require('dotenv').config();
 
-/*
-connectTMongo is a object that holds the function exported from db.js. By requiring './db', you are importing the function(s) that connects to MongoDB, allowing you to use it in this file.
-
-*/
 connectToMong();
-const User=require('./models/User');
-const express = require('express')
-const cors = require('cors')
-const app = express()
-const port = process.env.PORT; // Use the PORT environment variable or default to 5000
 
-app.use(cors())
-app.use(express.json()); //Adds a middleware to parse incoming JSON requests, making the data available in req.body.
-//w.o it req.body = undefined
+const express = require('express');
+const cors = require('cors');
 
-//Available Routes
-app.use("/api/auth",require("./routes/auth"));
-app.use("/api/notes",require("./routes/notes"));
+const app = express();
 
+const port = process.env.PORT || 5000;
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://your-frontend-domain.com"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("CORS not allowed"));
+      }
+    },
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api/notes", require("./routes/notes"));
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Server running on port ${port}`);
+});
