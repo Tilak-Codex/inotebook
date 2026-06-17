@@ -12,7 +12,8 @@ const port = process.env.PORT || 5000;
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://your-frontend-domain.com"
+  "https://your-frontend-domain.com",
+  "https://inotebook-delta-flame.vercel.app"
 ];
 
 app.use(

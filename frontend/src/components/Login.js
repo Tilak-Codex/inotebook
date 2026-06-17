@@ -10,7 +10,7 @@ const Login = (props) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/auth/loginUser", {
+      const response = await fetch(`${host}/api/auth/loginUser`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
