@@ -60,10 +60,7 @@ const Login = (props) => {
             />
           </div>
           <div className="mb-4">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <label htmlFor="password" className="form-label mb-0" style={{ fontWeight: 500, color: '#94a3b8' }}>Password</label>
-              <Link to="/forgot-password" style={{ color: '#818cf8', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>Forgot Password?</Link>
-            </div>
+            <label htmlFor="password" className="form-label" style={{ fontWeight: 500, color: '#94a3b8' }}>Password</label>
             <input 
               type="password" 
               className="form-control glass-input" 
