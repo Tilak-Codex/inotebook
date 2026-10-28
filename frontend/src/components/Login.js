@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
-const host = "https://inotebook-zdib.onrender.com";
+const host = process.env.REACT_APP_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://inotebook-zdib.onrender.com');
+
 const Login = (props) => {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
@@ -31,11 +32,11 @@ const Login = (props) => {
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
-  }
+  };
 
   return (
     <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '75vh' }}>
@@ -59,7 +60,10 @@ const Login = (props) => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="password" className="form-label" style={{ fontWeight: 500, color: '#94a3b8' }}>Password</label>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <label htmlFor="password" className="form-label mb-0" style={{ fontWeight: 500, color: '#94a3b8' }}>Password</label>
+              <Link to="/forgot-password" style={{ color: '#818cf8', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>Forgot Password?</Link>
+            </div>
             <input 
               type="password" 
               className="form-control glass-input" 
@@ -80,13 +84,13 @@ const Login = (props) => {
           </button>
         </form>
         
-        <div className="text-center mt-3" style={{ fontSize: '0.85rem' }}>
+        <div className="text-center mt-2" style={{ fontSize: '0.85rem' }}>
           <span className="text-muted">Don't have an account? </span>
-          <Link to="/signup" style={{ color: '#818cf8', textDecoration: 'none', fontWeight: 600 }}>Create account</Link>
+          <Link to="/signup" style={{ color: '#818cf8', textDecoration: 'none', fontWeight: 600 }}>Sign up</Link>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Login;

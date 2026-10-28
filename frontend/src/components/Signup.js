@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-const host = "https://inotebook-zdib.onrender.com";
-let response;
+
+const host = process.env.REACT_APP_BACKEND_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:5000' : 'https://inotebook-zdib.onrender.com');
+
 const Signup = (props) => {
   const [credentials, setCredentials] = useState({ name: "", email: "", password: "", cpassword: "" });
   const [loading, setLoading] = useState(false);
@@ -16,52 +17,57 @@ const Signup = (props) => {
     }
     setLoading(true);
     try {
-  response = await fetch(`${host}/api/auth/createUser`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ name, email, password })
-  });
+      const response = await fetch(`${host}/api/auth/createUser`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, email, password })
+      });
 
-  let json = {};
+      let json = {};
+      try {
+        json = await response.json();
+      } catch (err) {
+        console.log("JSON parse failed:", err);
+      }
 
-  try {
-    json = await response.json();
-  } catch (err) {
-    console.log("JSON parse failed:", err);
-  }
+      if (response.ok) {
+        if (json.token) {
+          localStorage.setItem('token', json.token);
+          props.showAlert("Account created successfully! Welcome to iNoteBook.", "success");
+          navigate("/");
+        } else {
+          props.showAlert("Account created successfully! Please log in.", "success");
+          navigate("/login");
+        }
+      } else {
+        const errMsg =
+          json.error ||
+          (json.errors && json.errors[0].msg) ||
+          "Failed to create account";
 
-  if (response.ok) {
-    props.showAlert("Verification email sent!", "success");
-    navigate("/login");
-  } else {
-    const errMsg =
-      json.error ||
-      (json.errors && json.errors[0].msg) ||
-      "Failed to create account";
+        props.showAlert(errMsg, "danger");
+      }
 
-    props.showAlert(errMsg, "danger");
-  }
+    } catch (err) {
+      console.log("FETCH ERROR:", err);
+      props.showAlert("Could not connect to authentication server", "danger");
 
-} catch (err) {
-  console.log("FETCH ERROR:", err);
-  props.showAlert("Server not responding", "danger");
-
-} finally {
-  setLoading(false);
-}
-  }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
-  }
+  };
 
   return (
     <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       <div className="glass-card p-5 my-4" style={{ width: '100%', maxWidth: '480px' }}>
         <h2 className="text-center mb-4" style={{ fontWeight: 800, background: 'linear-gradient(135deg, #a5b4fc, #6366f1)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Create Account</h2>
-        <p className="text-center text-muted mb-4" style={{ fontSize: '0.9rem' }}>Join iNotebook and secure your thoughts</p>
+        <p className="text-center text-muted mb-4" style={{ fontSize: '0.9rem' }}>Join iNoteBook and secure your thoughts</p>
         
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
@@ -102,7 +108,7 @@ const Signup = (props) => {
               onChange={onChange} 
               id="password" 
               name="password" 
-              placeholder="Min. 5 characters" 
+              placeholder="Min. 5 characters (1 upper, 1 lower, 1 digit)" 
               required 
               minLength={5}
               disabled={loading}
@@ -137,7 +143,7 @@ const Signup = (props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 export default Signup;

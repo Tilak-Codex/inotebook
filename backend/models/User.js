@@ -35,13 +35,12 @@ const UserSchema = new Schema({
     },
     isVerified:{
         type: Boolean,
-        default: false
+        default: true
     }
   
 });
 
 const User = mongoose.model("User", UserSchema); // creating a model named user with the defined schema
-User.createIndexes(); // to create indexes for the unique fields in the schema (like email in this case)
 module.exports = User;
 
 // Here user is model name (we gave the model name user), and Userschema is the schema which the model user should obey
